@@ -3,3 +3,7 @@ cache/
 artifacts/
 coverage/
 .env
+dist/
+*.tsbuildinfo
+.playwright-mcp/
+

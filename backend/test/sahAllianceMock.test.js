@@ -1,11 +1,16 @@
 const { expect } = require("chai");
-const { SahAllianceMock, ENTRY_TYPE, LOAN_STATUS } = require("../mock/sahAllianceMock");
 
 describe("SahAllianceMock", function () {
   const radha = "0xRadha";
   const meena = "0xMeena";
   const sunita = "0xSunita";
   const outsider = "0xOutsider";
+
+  let SahAllianceMock, ENTRY_TYPE, LOAN_STATUS;
+
+  before(async function () {
+    ({ SahAllianceMock, ENTRY_TYPE, LOAN_STATUS } = await import("../mock/sahAllianceMock.mjs"));
+  });
 
   async function deployCircle() {
     const mock = new SahAllianceMock();

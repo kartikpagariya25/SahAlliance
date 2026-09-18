@@ -3,7 +3,7 @@
 // ethers' `contract.connect(signer)`, and every write returns a tx-like object
 // with `.wait()` so call sites don't change when the real contract is wired in.
 
-const ENTRY_TYPE = Object.freeze({
+export const ENTRY_TYPE = Object.freeze({
   Contribution: 0,
   LoanRequested: 1,
   VoteCast: 2,
@@ -11,7 +11,7 @@ const ENTRY_TYPE = Object.freeze({
   Repayment: 4,
 });
 
-const LOAN_STATUS = Object.freeze({
+export const LOAN_STATUS = Object.freeze({
   Pending: 0,
   Released: 1,
 });
@@ -41,7 +41,7 @@ function makeTx(result) {
   };
 }
 
-class SahAllianceMock {
+export class SahAllianceMock {
   constructor() {
     this._circles = new Map(); // circleId -> { name, members: string[], isMember: Set, potBalance: bigint, voteThreshold: number }
     this._loans = new Map(); // loanId -> { circleId, borrower, amount, purpose, hasVoted: Set, yesVotes, amountRepaid, status }
@@ -269,5 +269,3 @@ class BoundSahAllianceMock {
     return makeTx({ accepted, amountRepaid: l.amountRepaid, refunded: value - accepted });
   }
 }
-
-module.exports = { SahAllianceMock, ENTRY_TYPE, LOAN_STATUS };
