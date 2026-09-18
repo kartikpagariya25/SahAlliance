@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useChain } from "../context/ChainContext";
 import { StatusBadge } from "../components/StatusBadge";
 import { MoneyAmount } from "../components/MoneyAmount";
@@ -71,7 +72,7 @@ export function CreditHistory() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <div className="flex items-center gap-4">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-terracotta text-xl font-semibold text-white">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-semibold text-white">
           {initials(owner?.name ?? "?")}
         </span>
         <div>
@@ -80,9 +81,13 @@ export function CreditHistory() {
         </div>
       </div>
 
+      <div className="mt-4 rounded-2xl bg-primary-soft px-4 py-3 text-sm text-primary-dark">
+        This is a record that didn't exist for her a year ago — permanent, portable, and hers to show to anyone.
+      </div>
+
       <button
         onClick={copyShareLink}
-        className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-terracotta-dark transition-colors hover:bg-terracotta-soft"
+        className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-semibold text-primary-dark transition-colors hover:bg-primary-soft"
       >
         {copied ? "✓ Link copied — share it with anyone" : "Share verifiable link"}
       </button>
@@ -92,7 +97,13 @@ export function CreditHistory() {
         {sorted.map((entry, i) => {
           const loan = entry.loanId > 0n ? loans.get(entry.loanId.toString()) : undefined;
           return (
-            <li key={i} className="rounded-2xl border border-border bg-surface p-4">
+            <motion.li
+              key={i}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: Math.min(i, 8) * 0.04 }}
+              className="rounded-2xl border border-border bg-surface p-4"
+            >
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-ink">{ENTRY_LABEL[entry.entryType]}</span>
                 <span className="text-xs text-ink-soft">{formatTimestamp(entry.timestamp)}</span>
@@ -107,7 +118,7 @@ export function CreditHistory() {
                   <StatusBadge status={loanRepaymentStatus(loan)} />
                 )}
               </div>
-            </li>
+            </motion.li>
           );
         })}
       </ul>

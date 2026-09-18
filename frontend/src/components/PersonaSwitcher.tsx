@@ -6,7 +6,7 @@ export function PersonaSwitcher() {
 
   return (
     <label className="flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-sm">
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-terracotta text-xs font-semibold text-white">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
         {initials(persona.name)}
       </span>
       <span className="text-ink-soft">Acting as</span>

@@ -6,4 +6,5 @@ coverage/
 dist/
 *.tsbuildinfo
 .playwright-mcp/
+.claude/
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useChain } from "../context/ChainContext";
 import { MoneyAmount } from "../components/MoneyAmount";
 import { ConfirmBadge } from "../components/ConfirmBadge";
@@ -33,6 +34,7 @@ export function Dashboard() {
   const [pending, setPending] = useState<"contribute" | "request" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmMs, setConfirmMs] = useState<number | null>(null);
+  const [showGuide, setShowGuide] = useState(true);
 
   useEffect(() => {
     if (circleId === null) return;
@@ -104,14 +106,45 @@ export function Dashboard() {
         a loan
       </p>
 
-      <div className="mt-3 rounded-3xl border border-border bg-surface p-8 text-center">
+      {showGuide && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="mt-3 rounded-2xl border border-primary-soft bg-primary-soft/60 p-4 text-sm text-primary-dark"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-semibold">New here? This is a live demo — try the whole cycle:</p>
+              <ol className="mt-1 list-decimal space-y-0.5 pl-4">
+                <li>Use "Acting as" (top right) to switch between the three members.</li>
+                <li>Contribute as each member to fill the shared pot.</li>
+                <li>Request a loan, then switch persona and vote to approve it.</li>
+                <li>Check Credit History to see the permanent record it created.</li>
+              </ol>
+            </div>
+            <button
+              onClick={() => setShowGuide(false)}
+              aria-label="Dismiss guide"
+              className="shrink-0 rounded-full px-2 py-1 text-primary-dark/70 hover:bg-primary-soft"
+            >
+              ✕
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      <div className="mt-3 rounded-3xl border border-border bg-linear-to-br from-primary-soft/50 via-surface to-surface p-8 text-center">
         <p className="text-sm uppercase tracking-wide text-ink-soft">Pot balance</p>
         <div className="mt-2">
           <MoneyAmount wei={circle.potBalance} size="xl" />
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-center gap-3">
+      <p className="mt-6 text-center text-xs uppercase tracking-wide text-ink-soft">
+        Tap a member to see her credit history
+      </p>
+      <div className="mt-2 flex items-center justify-center gap-3">
         {circle.members.map((member) => {
           const owner = personaByAddress(member);
           return (
@@ -119,7 +152,7 @@ export function Dashboard() {
               key={member}
               onClick={() => navigate(`/history/${member}`)}
               title={owner ? owner.name : shortAddress(member)}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-terracotta-soft font-semibold text-terracotta-dark transition-transform hover:-translate-y-0.5"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-soft font-semibold text-primary-dark transition-transform hover:-translate-y-0.5"
             >
               {initials(owner ? owner.name : shortAddress(member))}
             </button>
@@ -134,13 +167,13 @@ export function Dashboard() {
             setError(null);
             setShowContribute((v) => !v);
           }}
-          className="flex-1 rounded-2xl bg-terracotta px-6 py-4 text-lg font-semibold text-white transition-transform hover:-translate-y-0.5 hover:bg-terracotta-dark"
+          className="flex-1 rounded-2xl bg-primary px-6 py-4 text-lg font-semibold text-white transition-transform hover:-translate-y-0.5 hover:bg-primary-dark"
         >
           Contribute
         </button>
         <button
           onClick={() => setShowRequest((v) => !v)}
-          className="flex-1 rounded-2xl border border-border bg-surface px-6 py-4 font-semibold text-ink transition-colors hover:bg-terracotta-soft"
+          className="flex-1 rounded-2xl border border-border bg-surface px-6 py-4 font-semibold text-ink transition-colors hover:bg-primary-soft"
         >
           Request a loan
         </button>
@@ -158,14 +191,14 @@ export function Dashboard() {
               min="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-ink"
+              className="mt-1 w-full rounded-lg border border-border bg-frost px-3 py-2 text-ink"
             />
           </label>
           <div className="mt-3 flex items-center gap-3">
             <button
               type="submit"
               disabled={pending === "contribute"}
-              className="rounded-full bg-terracotta px-5 py-2 font-semibold text-white disabled:opacity-60"
+              className="rounded-full bg-primary px-5 py-2 font-semibold text-white disabled:opacity-60"
             >
               Confirm contribution
             </button>
@@ -184,7 +217,7 @@ export function Dashboard() {
               min="0"
               value={loanAmount}
               onChange={(e) => setLoanAmount(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-ink"
+              className="mt-1 w-full rounded-lg border border-border bg-frost px-3 py-2 text-ink"
             />
           </label>
           <label className="mt-3 block text-sm font-medium text-ink-soft">
@@ -194,14 +227,14 @@ export function Dashboard() {
               value={purpose}
               onChange={(e) => setPurpose(e.target.value)}
               placeholder="New sewing machine"
-              className="mt-1 w-full rounded-lg border border-border bg-cream px-3 py-2 text-ink"
+              className="mt-1 w-full rounded-lg border border-border bg-frost px-3 py-2 text-ink"
             />
           </label>
           <div className="mt-3 flex items-center gap-3">
             <button
               type="submit"
               disabled={pending === "request"}
-              className="rounded-full bg-terracotta px-5 py-2 font-semibold text-white disabled:opacity-60"
+              className="rounded-full bg-primary px-5 py-2 font-semibold text-white disabled:opacity-60"
             >
               Submit request
             </button>

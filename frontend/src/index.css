@@ -5,18 +5,20 @@
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  --color-cream: #fdf8f1;
-  --color-cream-soft: #f3e9d8;
-  --color-ink: #111827;
-  --color-ink-soft: #4b4038;
-  --color-terracotta: #c56a3c;
-  --color-terracotta-dark: #a4532c;
-  --color-terracotta-soft: #ecd3c1;
+  --color-frost: #f4f8ff;
+  --color-frost-soft: #e3ecfc;
+  --color-ink: #0b1e3d;
+  --color-ink-soft: #47597a;
+  --color-primary: #2b57e8;
+  --color-primary-dark: #1a3aad;
+  --color-primary-soft: #dbe6fd;
+  --color-accent: #c56a3c;
+  --color-accent-soft: #f4e2d3;
   --color-success: #16a34a;
   --color-warning: #d97706;
   --color-danger: #dc2626;
   --color-surface: #ffffff;
-  --color-border: #e8d5c4;
+  --color-border: #d8e3fa;
 
   --text-xs: 0.875rem;
   --text-sm: 1rem;
@@ -27,7 +29,7 @@
 }
 
 body {
-  background-color: var(--color-cream);
+  background-color: var(--color-frost);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -48,11 +50,47 @@ h3,
 }
 
 ::selection {
-  background-color: var(--color-terracotta-soft);
+  background-color: var(--color-primary-soft);
   color: var(--color-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-terracotta);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* Soft ambient mesh used behind hero-style sections — cheap, GPU-friendly,
+   no image asset needed. */
+.bg-mesh {
+  background-image:
+    radial-gradient(ellipse 60% 50% at 15% 0%, color-mix(in srgb, var(--color-primary) 16%, transparent), transparent),
+    radial-gradient(ellipse 50% 40% at 100% 20%, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent),
+    radial-gradient(ellipse 45% 45% at 85% 100%, color-mix(in srgb, var(--color-primary) 10%, transparent), transparent);
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--color-primary) 0%, var(--color-primary-dark) 60%, var(--color-ink) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
 }

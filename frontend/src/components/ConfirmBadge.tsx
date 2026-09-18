@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 // The single piece of choreography design.md §2.4 asks for: a loading state,
 // then an explicit confirmation time, satisfying FR-8 for every
@@ -13,20 +14,32 @@ export function ConfirmBadge({ pending, confirmedInMs }: { pending: boolean; con
     return () => clearTimeout(timer);
   }, [confirmedInMs]);
 
-  if (pending) {
-    return (
-      <span className="inline-flex items-center gap-2 text-sm text-ink-soft">
-        <span className="h-2 w-2 animate-pulse rounded-full bg-terracotta" />
-        Confirming…
-      </span>
-    );
-  }
-
-  if (!visible || confirmedInMs === null) return null;
-
   return (
-    <span className="inline-flex items-center gap-2 text-sm font-semibold text-success transition-opacity duration-300">
-      ✓ Confirmed in {Math.round(confirmedInMs)}ms
-    </span>
+    <AnimatePresence mode="wait">
+      {pending && (
+        <motion.span
+          key="pending"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="inline-flex items-center gap-2 text-sm text-ink-soft"
+        >
+          <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+          Confirming…
+        </motion.span>
+      )}
+      {!pending && visible && confirmedInMs !== null && (
+        <motion.span
+          key="confirmed"
+          initial={{ opacity: 0, scale: 0.85, y: 4 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className="inline-flex items-center gap-2 text-sm font-semibold text-success"
+        >
+          ✓ Confirmed in {Math.round(confirmedInMs)}ms
+        </motion.span>
+      )}
+    </AnimatePresence>
   );
 }

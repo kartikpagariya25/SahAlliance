@@ -1,4 +1,5 @@
 import { SectionReveal } from "../components/SectionReveal";
+import { SewingMachineModel } from "../three/SewingMachineModel";
 
 const STEPS = [
   {
@@ -50,7 +51,7 @@ export function HowItWorks() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <SectionReveal className="mb-14 text-center">
-        <p className="font-mono text-sm uppercase tracking-wide text-terracotta-dark">How it works</p>
+        <p className="font-mono text-sm uppercase tracking-wide text-primary-dark">How it works</p>
         <h1 className="font-display mt-3 text-3xl text-ink sm:text-4xl">One cycle, repeated, made verifiable</h1>
       </SectionReveal>
 
@@ -58,7 +59,7 @@ export function HowItWorks() {
         {STEPS.map((step, i) => (
           <SectionReveal key={step.title}>
             <li className="flex gap-5">
-              <span className="font-display flex h-12 w-12 flex-none items-center justify-center rounded-full bg-terracotta text-lg text-white">
+              <span className="font-display flex h-12 w-12 flex-none items-center justify-center rounded-full bg-primary text-lg text-white">
                 {i + 1}
               </span>
               <div>
@@ -70,7 +71,18 @@ export function HowItWorks() {
         ))}
       </ol>
 
-      <SectionReveal className="mt-20">
+      <SectionReveal className="mt-20 flex flex-col items-center gap-6 rounded-2xl border border-border bg-surface p-6 text-center sm:flex-row sm:text-left">
+        <SewingMachineModel className="h-40 w-40 flex-none sm:h-48 sm:w-48" />
+        <div>
+          <h2 className="font-display text-xl text-ink">This is exactly how Radha got her machine</h2>
+          <p className="mt-1 text-ink-soft">
+            ₹5,000, requested through step 3, approved by her group in step 4, and repaid through step 5 —
+            every rupee of it now a permanent record instead of a line in a notebook.
+          </p>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal className="mt-14">
         <h2 className="font-display text-2xl text-ink">Questions judges (and bankers) tend to ask</h2>
       </SectionReveal>
       <SectionReveal className="mt-6 space-y-6">

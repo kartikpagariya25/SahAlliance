@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useChain } from "../context/ChainContext";
 import { MoneyAmount } from "../components/MoneyAmount";
 import { ConfirmBadge } from "../components/ConfirmBadge";
@@ -69,7 +70,7 @@ export function LoanVoting() {
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <div className="rounded-3xl border border-border bg-surface p-6">
         <div className="flex items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-terracotta text-lg font-semibold text-white">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-semibold text-white">
             {initials(borrower?.name ?? "?")}
           </span>
           <div>
@@ -90,10 +91,12 @@ export function LoanVoting() {
               {loan.yesVotes.toString()} of {circle.voteThreshold.toString()} needed
             </span>
           </div>
-          <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-cream-soft">
-            <div
-              className="h-full rounded-full bg-terracotta transition-all duration-500"
-              style={{ width: `${progress}%` }}
+          <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-frost-soft">
+            <motion.div
+              className="h-full rounded-full bg-linear-to-r from-primary to-primary-dark"
+              initial={false}
+              animate={{ width: `${progress}%` }}
+              transition={{ type: "spring", stiffness: 120, damping: 18 }}
             />
           </div>
         </div>
@@ -106,7 +109,7 @@ export function LoanVoting() {
               ✓ Loan released — funds sent to {borrower?.name ?? shortAddress(loan.borrower)}
             </div>
           ) : hasVoted ? (
-            <div className="rounded-xl bg-terracotta-soft px-4 py-3 text-terracotta-dark">
+            <div className="rounded-xl bg-primary-soft px-4 py-3 text-primary-dark">
               {myVoteChoice === true && "You approved this ✓"}
               {myVoteChoice === false && "You declined this"}
               {myVoteChoice === null && "You've already voted on this request."}
@@ -116,14 +119,14 @@ export function LoanVoting() {
               <button
                 onClick={() => vote(true)}
                 disabled={pending}
-                className="flex-1 rounded-2xl bg-terracotta px-6 py-4 text-lg font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:opacity-60"
+                className="flex-1 rounded-2xl bg-primary px-6 py-4 text-lg font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:opacity-60"
               >
                 Approve
               </button>
               <button
                 onClick={() => vote(false)}
                 disabled={pending}
-                className="flex-1 rounded-2xl border border-border bg-surface px-6 py-4 font-semibold text-ink transition-colors hover:bg-cream-soft disabled:opacity-60"
+                className="flex-1 rounded-2xl border border-border bg-surface px-6 py-4 font-semibold text-ink transition-colors hover:bg-frost-soft disabled:opacity-60"
               >
                 Decline
               </button>
@@ -135,7 +138,7 @@ export function LoanVoting() {
         </div>
       </div>
 
-      <Link to="/dashboard" className="mt-6 inline-block text-sm text-terracotta-dark hover:underline">
+      <Link to="/dashboard" className="mt-6 inline-block text-sm text-primary-dark hover:underline">
         ← Back to Circle dashboard
       </Link>
     </div>
