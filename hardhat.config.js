@@ -10,5 +10,9 @@ module.exports = {
   },
   networks: {
     hardhat: {},
+    monadTestnet: {
+      url: process.env.MONAD_RPC_URL || "",
+      accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
+    },
   },
 };
