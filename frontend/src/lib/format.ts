@@ -10,6 +10,10 @@ export function monToWei(amount: string): bigint {
   return parseEther(amount || "0");
 }
 
+export function formatEtherNumber(wei: bigint): number {
+  return Number(formatEther(wei));
+}
+
 export function formatTimestamp(unixSeconds: bigint): string {
   return new Date(Number(unixSeconds) * 1000).toLocaleString(undefined, {
     day: "numeric",

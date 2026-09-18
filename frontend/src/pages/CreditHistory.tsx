@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useChain } from "../context/ChainContext";
 import { StatusBadge } from "../components/StatusBadge";
 import { MoneyAmount } from "../components/MoneyAmount";
+import { RepayModal } from "../components/RepayModal";
 import { initials, personaByAddress } from "../lib/personas";
 import { formatTimestamp, shortAddress } from "../lib/format";
 import { ENTRY_TYPE, loanRepaymentStatus, type HistoryEntry, type LoanView } from "../lib/types";
@@ -25,6 +26,10 @@ export function CreditHistory() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [loans, setLoans] = useState<Map<string, LoanView>>(new Map());
   const [copied, setCopied] = useState(false);
+  const [repayLoanId, setRepayLoanId] = useState<bigint | null>(null);
+
+  const isOwnPage = !!persona && target === persona.address;
+  const repayingLoan = repayLoanId !== null ? loans.get(repayLoanId.toString()) : undefined;
 
   useEffect(() => {
     if (!target) return;
@@ -34,7 +39,14 @@ export function CreditHistory() {
       if (cancelled) return;
       setHistory(entries);
 
-      const loanIds = [...new Set(entries.filter((e) => e.loanId > 0n).map((e) => e.loanId.toString()))];
+      // loanId is 0 on Contribution entries as a "no loan" sentinel, which
+      // collides with a real loan #0 (IDs are zero-indexed) — filter by
+      // entry type instead of the loanId value to avoid excluding it.
+      const loanIds = [
+        ...new Set(
+          entries.filter((e) => e.entryType !== ENTRY_TYPE.Contribution).map((e) => e.loanId.toString())
+        ),
+      ];
       const fetched = await Promise.all(loanIds.map((id) => client.getLoan(BigInt(id))));
       if (cancelled) return;
       setLoans(new Map(loanIds.map((id, i) => [id, fetched[i]])));
@@ -114,7 +126,7 @@ export function CreditHistory() {
       <ul className="mt-8 space-y-3">
         {sorted.length === 0 && <li className="text-sm text-ink-soft">No activity recorded yet.</li>}
         {sorted.map((entry, i) => {
-          const loan = entry.loanId > 0n ? loans.get(entry.loanId.toString()) : undefined;
+          const loan = loans.get(entry.loanId.toString());
           return (
             <motion.li
               key={i}
@@ -134,13 +146,34 @@ export function CreditHistory() {
                   <span className="text-sm text-ink-soft">—</span>
                 )}
                 {loan && entry.entryType === ENTRY_TYPE.LoanReceived && (
-                  <StatusBadge status={loanRepaymentStatus(loan)} />
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={loanRepaymentStatus(loan)} />
+                    {isOwnPage && loan.amountRepaid < loan.amount && (
+                      <button
+                        onClick={() => setRepayLoanId(entry.loanId)}
+                        className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white hover:bg-primary-dark"
+                      >
+                        Repay
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </motion.li>
           );
         })}
       </ul>
+
+      <AnimatePresence>
+        {repayingLoan && repayLoanId !== null && (
+          <RepayModal
+            loanId={repayLoanId}
+            amount={repayingLoan.amount}
+            amountRepaid={repayingLoan.amountRepaid}
+            onClose={() => setRepayLoanId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
