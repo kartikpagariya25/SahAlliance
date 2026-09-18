@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useChain } from "../context/ChainContext";
 import { StatusBadge } from "../components/StatusBadge";
@@ -19,14 +19,15 @@ const ENTRY_LABEL: Record<number, string> = {
 export function CreditHistory() {
   const { address } = useParams<{ address?: string }>();
   const { client, persona, version } = useChain();
-  const target = address ?? persona.address;
-  const owner = personaByAddress(target);
+  const target = address ?? persona?.address ?? null;
+  const owner = target ? personaByAddress(target) : undefined;
 
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [loans, setLoans] = useState<Map<string, LoanView>>(new Map());
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (!target) return;
     let cancelled = false;
     (async () => {
       const entries = await client.getMemberHistory(target);
@@ -63,10 +64,28 @@ export function CreditHistory() {
   const sorted = [...history].sort((a, b) => Number(b.timestamp - a.timestamp));
 
   function copyShareLink() {
+    if (!target) return;
     const url = `${window.location.origin}/history/${target}`;
     navigator.clipboard?.writeText(url).catch(() => {});
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
+  }
+
+  if (!target) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-16 text-center">
+        <p className="font-display text-xl text-ink">Whose history do you want to see?</p>
+        <p className="mt-2 text-sm text-ink-soft">
+          Sign in to view your own record, or open a member's shared link directly.
+        </p>
+        <Link
+          to="/dashboard"
+          className="mt-6 inline-block rounded-full bg-primary px-6 py-3 font-semibold text-white transition-transform hover:-translate-y-0.5 hover:bg-primary-dark"
+        >
+          Sign in
+        </Link>
+      </div>
+    );
   }
 
   return (

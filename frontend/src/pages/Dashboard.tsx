@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useChain } from "../context/ChainContext";
+import { RequireSignIn } from "../components/RequireSignIn";
 import { MoneyAmount } from "../components/MoneyAmount";
-import { ConfirmBadge } from "../components/ConfirmBadge";
+import { ContributeModal } from "../components/ContributeModal";
+import { RequestLoanModal } from "../components/RequestLoanModal";
 import { initials, personaByAddress } from "../lib/personas";
-import { monToWei, formatMon, formatTimestamp, shortAddress } from "../lib/format";
+import { formatMon, formatTimestamp, shortAddress } from "../lib/format";
 import { ENTRY_TYPE, type CircleView, type HistoryEntry } from "../lib/types";
 
 const ENTRY_LABEL: Record<number, string> = {
@@ -21,19 +23,20 @@ interface FeedItem extends HistoryEntry {
 }
 
 export function Dashboard() {
-  const { client, persona, circleId, version, runWrite } = useChain();
+  return (
+    <RequireSignIn>
+      <DashboardContent />
+    </RequireSignIn>
+  );
+}
+
+function DashboardContent() {
+  const { client, circleId, version } = useChain();
   const navigate = useNavigate();
 
   const [circle, setCircle] = useState<CircleView | null>(null);
   const [feed, setFeed] = useState<FeedItem[]>([]);
-  const [showContribute, setShowContribute] = useState(false);
-  const [showRequest, setShowRequest] = useState(false);
-  const [amount, setAmount] = useState("0.05");
-  const [loanAmount, setLoanAmount] = useState("0.2");
-  const [purpose, setPurpose] = useState("");
-  const [pending, setPending] = useState<"contribute" | "request" | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [confirmMs, setConfirmMs] = useState<number | null>(null);
+  const [modal, setModal] = useState<"contribute" | "request" | null>(null);
   const [showGuide, setShowGuide] = useState(true);
 
   useEffect(() => {
@@ -59,42 +62,6 @@ export function Dashboard() {
     };
   }, [client, circleId, version]);
 
-  async function handleContribute(e: React.FormEvent) {
-    e.preventDefault();
-    if (circleId === null) return;
-    setError(null);
-    setConfirmMs(null);
-    setPending("contribute");
-    try {
-      const receipt = await runWrite(() =>
-        client.connect(persona.address).contribute(circleId, { value: monToWei(amount) })
-      );
-      setConfirmMs(receipt.confirmedInMs);
-      setShowContribute(false);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setPending(null);
-    }
-  }
-
-  async function handleRequestLoan(e: React.FormEvent) {
-    e.preventDefault();
-    if (circleId === null) return;
-    setError(null);
-    setPending("request");
-    try {
-      const receipt = await runWrite(() =>
-        client.connect(persona.address).requestLoan(circleId, monToWei(loanAmount), purpose || "Circle loan")
-      );
-      navigate(`/loan/${receipt.loanId}`);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setPending(null);
-    }
-  }
-
   if (circleId === null || !circle) {
     return <div className="mx-auto max-w-4xl px-4 py-16 text-center text-ink-soft">Setting up the Circle…</div>;
   }
@@ -117,7 +84,7 @@ export function Dashboard() {
             <div>
               <p className="font-semibold">New here? This is a live demo — try the whole cycle:</p>
               <ol className="mt-1 list-decimal space-y-0.5 pl-4">
-                <li>Use "Acting as" (top right) to switch between the three members.</li>
+                <li>Use your profile menu (top right) to switch between the three members.</li>
                 <li>Contribute as each member to fill the shared pot.</li>
                 <li>Request a loan, then switch persona and vote to approve it.</li>
                 <li>Check Credit History to see the permanent record it created.</li>
@@ -162,86 +129,18 @@ export function Dashboard() {
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <button
-          onClick={() => {
-            setConfirmMs(null);
-            setError(null);
-            setShowContribute((v) => !v);
-          }}
+          onClick={() => setModal("contribute")}
           className="flex-1 rounded-2xl bg-primary px-6 py-4 text-lg font-semibold text-white transition-transform hover:-translate-y-0.5 hover:bg-primary-dark"
         >
           Contribute
         </button>
         <button
-          onClick={() => setShowRequest((v) => !v)}
+          onClick={() => setModal("request")}
           className="flex-1 rounded-2xl border border-border bg-surface px-6 py-4 font-semibold text-ink transition-colors hover:bg-primary-soft"
         >
           Request a loan
         </button>
       </div>
-
-      {error && <p className="mt-3 text-sm text-danger">{error}</p>}
-
-      {showContribute && (
-        <form onSubmit={handleContribute} className="mt-4 rounded-2xl border border-border bg-surface p-5">
-          <label className="block text-sm font-medium text-ink-soft">
-            Amount (MON)
-            <input
-              type="number"
-              step="0.001"
-              min="0"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-border bg-frost px-3 py-2 text-ink"
-            />
-          </label>
-          <div className="mt-3 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={pending === "contribute"}
-              className="rounded-full bg-primary px-5 py-2 font-semibold text-white disabled:opacity-60"
-            >
-              Confirm contribution
-            </button>
-            <ConfirmBadge pending={pending === "contribute"} confirmedInMs={confirmMs} />
-          </div>
-        </form>
-      )}
-
-      {showRequest && (
-        <form onSubmit={handleRequestLoan} className="mt-4 rounded-2xl border border-border bg-surface p-5">
-          <label className="block text-sm font-medium text-ink-soft">
-            Amount (MON)
-            <input
-              type="number"
-              step="0.001"
-              min="0"
-              value={loanAmount}
-              onChange={(e) => setLoanAmount(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-border bg-frost px-3 py-2 text-ink"
-            />
-          </label>
-          <label className="mt-3 block text-sm font-medium text-ink-soft">
-            Purpose
-            <input
-              type="text"
-              value={purpose}
-              onChange={(e) => setPurpose(e.target.value)}
-              placeholder="New sewing machine"
-              className="mt-1 w-full rounded-lg border border-border bg-frost px-3 py-2 text-ink"
-            />
-          </label>
-          <div className="mt-3 flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={pending === "request"}
-              className="rounded-full bg-primary px-5 py-2 font-semibold text-white disabled:opacity-60"
-            >
-              Submit request
-            </button>
-            <ConfirmBadge pending={pending === "request"} confirmedInMs={null} />
-          </div>
-        </form>
-      )}
 
       <div className="mt-10">
         <h2 className="font-display text-xl text-ink">Recent activity</h2>
@@ -264,6 +163,13 @@ export function Dashboard() {
           ))}
         </ul>
       </div>
+
+      <AnimatePresence>
+        {modal === "contribute" && (
+          <ContributeModal circleId={circleId} potBalance={circle.potBalance} onClose={() => setModal(null)} />
+        )}
+        {modal === "request" && <RequestLoanModal circleId={circleId} onClose={() => setModal(null)} />}
+      </AnimatePresence>
     </div>
   );
 }

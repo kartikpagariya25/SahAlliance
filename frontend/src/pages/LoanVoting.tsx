@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useChain } from "../context/ChainContext";
+import { RequireSignIn } from "../components/RequireSignIn";
 import { MoneyAmount } from "../components/MoneyAmount";
 import { ConfirmBadge } from "../components/ConfirmBadge";
 import { initials, personaByAddress } from "../lib/personas";
@@ -9,6 +10,14 @@ import { shortAddress } from "../lib/format";
 import { LOAN_STATUS, type CircleView, type LoanView } from "../lib/types";
 
 export function LoanVoting() {
+  return (
+    <RequireSignIn>
+      <LoanVotingContent />
+    </RequireSignIn>
+  );
+}
+
+function LoanVotingContent() {
   const { loanId } = useParams<{ loanId: string }>();
   const { client, persona, version, runWrite } = useChain();
 
@@ -21,7 +30,7 @@ export function LoanVoting() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loanId) return;
+    if (!loanId || !persona) return;
     const loanIdBig = BigInt(loanId);
     let cancelled = false;
     (async () => {
@@ -39,10 +48,10 @@ export function LoanVoting() {
     return () => {
       cancelled = true;
     };
-  }, [client, loanId, persona.address, version]);
+  }, [client, loanId, persona, version]);
 
   async function vote(approve: boolean) {
-    if (!loanId) return;
+    if (!loanId || !persona) return;
     setError(null);
     setPending(true);
     try {
