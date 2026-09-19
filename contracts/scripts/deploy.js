@@ -3,9 +3,9 @@ const hre = require("hardhat");
 // Fill these three in with real wallet addresses (Kartik / Aditya / Vikrant)
 // before running the deploy — this becomes the demo Circle's members.
 const DEMO_MEMBERS = [
-  "0x0000000000000000000000000000000000000001", // Radha (Kartik)
-  "0x0000000000000000000000000000000000000002", // Meena (Aditya)
-  "0x0000000000000000000000000000000000000003", // Sunita (Vikrant)
+  "0x932225DcC3843E2fF192f13Cc8A96Ffc79acEDaA", // Radha (Kartik)
+  "0xb850F8C45284911444f9255083B2744CE04CDE3A", // Meena (Aditya)
+  "0x6670218d9c8B6D7247A028eDaC748185E467e2c3", // Sunita (Vikrant)
 ];
 
 async function main() {
