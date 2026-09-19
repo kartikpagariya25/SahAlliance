@@ -11,8 +11,10 @@ db.exec(`
     address TEXT,
     amount TEXT,
     purpose TEXT,
-    tx_hash TEXT UNIQUE,
-    timestamp INTEGER
+    tx_hash TEXT NOT NULL,
+    log_index INTEGER NOT NULL,
+    timestamp INTEGER,
+    UNIQUE(tx_hash, log_index)
   );
 
   CREATE TABLE IF NOT EXISTS circles (
