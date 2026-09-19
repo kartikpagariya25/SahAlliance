@@ -1,0 +1,115 @@
+:root {
+  --bg: #faf5ee;
+  --card: #ffffff;
+  --accent: #c9622b;
+  --accent-dark: #a34e1f;
+  --text: #2c241d;
+  --text-muted: #7a6d5f;
+  --green: #4a8b5c;
+  --amber: #c9922b;
+  --border: #e8ddcd;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 16px 16px 32px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.brand { font-weight: 700; font-size: 1.1rem; color: var(--accent-dark); }
+
+.wallet-pill {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.pot-balance { font-size: 2.2rem; font-weight: 800; color: var(--accent-dark); margin: 4px 0; }
+.pot-label { color: var(--text-muted); font-size: 0.9rem; }
+
+.avatar-row { display: flex; gap: 10px; margin: 14px 0; }
+.avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.95rem;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-secondary { background: white; color: var(--accent-dark); border: 1.5px solid var(--accent); }
+.btn-approve { background: var(--green); color: white; flex: 1; }
+.btn-decline { background: #b23b3b; color: white; flex: 1; }
+.btn-row { display: flex; gap: 10px; }
+
+.feed-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.feed-item:last-child { border-bottom: none; }
+.feed-time { color: var(--text-muted); font-size: 0.78rem; }
+
+.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+.badge-outstanding { background: #f3e0d8; color: var(--accent-dark); }
+.badge-partial { background: #f7ecd0; color: #8a6a10; }
+.badge-repaid { background: #dcefe0; color: var(--green); }
+
+.confirm-toast {
+  background: var(--green);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.progress-ring-label { text-align: center; font-weight: 700; margin-bottom: 8px; }
+
+.nav-back { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-bottom: 10px; display: inline-block; }
